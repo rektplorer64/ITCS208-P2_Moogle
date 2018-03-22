@@ -43,63 +43,42 @@ public class SimpleMovieSearchEngine implements BaseMovieSearchEngine{
 
         //Pattern for CSV; For example
         //101529,"Brass Teapot, The (2012)",Comedy|Fantasy|Thriller
-        //  (1) , |-----(2)--------------|  |--------(4)----------|
-        Pattern eachLinePattern = Pattern.compile("(\\d+),[\\\"]?(.+)[\\\"]?[\\s]?,(.+)");
+        //  (1) , |-----(2)-------|  |(3)|  |--------(4)----------|
+        Pattern eachLinePattern = Pattern.compile("(\\d+),[\\\"?]?(.*)\\s\\((\\d+)\\)[\\\"?]?,(.+)");
 
         //Fields Variable for Movie Datatype
-        int movieID, year = 0;
-        String movieTitleAndYear, movieGenres;
-        String movieTitle = null;
+        int movieID, year;
+        String movieTitle, movieGenres;
 
         //Pattern for the forth group of eachLinePattern; For example
         //comedy|Fantasy|Thriller
         //  (1)    (2)      (3)
         Pattern categoriesPattern = Pattern.compile("([^|]+)");
-
-        //Pattern for the second group of eachLinePattern; For example
-        //Twelve Monkeys (a.k.a. 12 Monkeys) (1995)
-        //|------------(1)-----------------|  |(2)|
-        //Four Rooms (1995)
-        //|--(1)---|  |(2)|
-        Pattern yearPattern = Pattern.compile("(.+) \\((\\d{4})\\)|(.+)");
-        Matcher generalMatcher;
-        Matcher yearMatcher;
+        Matcher matcher;
 
         for(int i = 1; i < lines.length; i++){
-            generalMatcher = eachLinePattern.matcher(lines[i]);
-
-            if(!generalMatcher.find()){
+            matcher = eachLinePattern.matcher(lines[i]);
+            if(!matcher.find()){
                 continue;
             }
 
-            movieID = Integer.parseInt(generalMatcher.group(1));       /*Assigns group 1 into movieID field variable*/
-            movieTitleAndYear = generalMatcher.group(2);       /*Assigns group 2 into movieTitleAndYear field variable*/
-
-            yearMatcher = yearPattern.matcher(movieTitleAndYear);
-            if(yearMatcher.find()){
-                if(yearMatcher.group(1) == null || yearMatcher.group(2) == null){       /*If it has no year specified, get only its title*/
-                    movieTitle = yearMatcher.group(3);
-                    year = 0;
-                }else{      /*If it has both title and year, get them all*/
-                    movieTitle = yearMatcher.group(1);
-                    year = Integer.parseInt(yearMatcher.group(2));      /*Assigns group 3 into year field variable*/
-                }
-
-            }
-
-            movieGenres = generalMatcher.group(3);     /*Assigns group 3 into movieGenres field variable*/
+            movieID = Integer.parseInt(matcher.group(1));       /*Assigns group 1 into movieID field variable*/
+            movieTitle = matcher.group(2);       /*Assigns group 2 into movieTitle field variable*/
+            year = Integer.parseInt(matcher.group(3));      /*Assigns group 3 into year field variable*/
+            movieGenres = matcher.group(4);     /*Assigns group 4 into movieGenres field variable*/
             moviesMap.put(movieID, new Movie(movieID, movieTitle, year));    /*Stores all fields into the Map (the Key is movieID, and the value is a movie object)*/
 
-            if(movieGenres.equals("(no genres listed)")){   /*If there is no categories to be assigned*/
+            matcher = categoriesPattern.matcher(movieGenres);       /*Sets the pattern for the Categories String*/
+
+            if(movieGenres.equals("(no genres listed)")){   /*If there is no categories to be assign*/
                 continue;
             }
 
-            generalMatcher = categoriesPattern.matcher(movieGenres);       /*Sets the pattern for the Categories String*/
             //Assigns each categories to each Movie Object by using its movieID
             //System.out.println(movieGenres);
-            while(generalMatcher.find()){
-                //System.out.println("Genres = " + generalMatcher.group());
-                moviesMap.get(movieID).addTag(generalMatcher.group());        //j is actually the movieID
+            while(matcher.find()){
+                //System.out.println("Genres = " + matcher.group());
+                moviesMap.get(movieID).addTag(matcher.group());        //j is actually the movieID
             }
         }
 
