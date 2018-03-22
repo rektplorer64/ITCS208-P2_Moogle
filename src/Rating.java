@@ -6,14 +6,21 @@ import java.util.Objects;
 // Section: 1
 
 public class Rating {
+	//Field Variables
 	public Movie m;
 	public User u;
 	public double rating;	//rating can be [0, 5]
 	public long timestamp;	//timestamp tells you the time this rating was recorded
-	
-	
+
+	/**
+	 * Constructor for Rating Class
+	 * @param _u User who given the Rating
+	 * @param _m Movie who were given the Rating
+	 * @param _rating Score of the Rating
+	 * @param _timestamp When the Rating was given
+	 */
 	public Rating(User _u, Movie _m, double _rating, long _timestamp) {
-		if(_rating > 5 || _rating < 0){
+		if(_rating > 5 || _rating < 0){		/*If the score is not in [0.5, 5], returns*/
 			return;
 		}
 		this.m = _m;

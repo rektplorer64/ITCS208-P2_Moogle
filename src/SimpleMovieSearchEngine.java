@@ -175,7 +175,7 @@ public class SimpleMovieSearchEngine implements BaseMovieSearchEngine{
 
     /**
      * Search Movies by the tag
-     * @param tag Keyword String
+     * @param tag Keyword Tag String
      * @return the List of Movies which fulfills the criteria
      */
     @Override
@@ -189,6 +189,11 @@ public class SimpleMovieSearchEngine implements BaseMovieSearchEngine{
         return result;
     }
 
+    /**
+     * Search Movies by using year input
+     * @param year Year of released
+     * @return the List of Movies which fulfills the criteria
+     */
     @Override
     public List<Movie> searchByYear(int year){
         List<Movie> result = new ArrayList<>();
@@ -200,57 +205,64 @@ public class SimpleMovieSearchEngine implements BaseMovieSearchEngine{
         return result;
     }
 
+    /**
+     * Search movies by given at least one field (title, tag, year)
+     * @param title Keyword String
+     * @param tag Keyword Tag String
+     * @param year Year of released
+     * @return the List of Movies which fulfills the criteria
+     */
     @Override
     public List<Movie> advanceSearch(String title, String tag, int year){
-        List<Movie> result = new ArrayList<>();
+        List<Movie> result = new ArrayList<>();     /*Initializes List*/
         boolean tagIsOk;
         boolean yearIsOk = false;
-        for(int movieID : movies.keySet()){
-            if(title != null){
+        for(int movieID : movies.keySet()){     /*For each key of movies*/
+            if(title != null){      /*If title is given*/
                 boolean titleIsOk = movies.get(movieID).getTitle().toLowerCase().contains(title.toLowerCase());
-                if(tag != null){
-                    tagIsOk = movies.get(movieID).getTags().contains(tag);
-                    if(year != -1){
-                        yearIsOk = movies.get(movieID).getYear() == year;
+                if(tag != null){        /*If title and tag are given*/
+                    tagIsOk = movies.get(movieID).getTags().contains(tag);      /*Check if any Movie entry has input tag as substring*/
+                    if(year != -1){     /*If title, tag and year are given*/
+                        yearIsOk = movies.get(movieID).getYear() == year;       /*Check if any Movie entry has exact input year*/
                         if(titleIsOk && tagIsOk && yearIsOk){
-                            result.add(movies.get(movieID));
+                            result.add(movies.get(movieID));        /*Add the item to result*/
                         }
-                    }else{
+                    }else{      /*If title and tag are given*/
                         if(titleIsOk && tagIsOk){
                             result.add(movies.get(movieID));
                         }
                     }
                 }else{
-                    if(year != -1){
-                        yearIsOk = movies.get(movieID).getYear() == year;
+                    if(year != -1){     /*If title and year are given*/
+                        yearIsOk = movies.get(movieID).getYear() == year;       /*Check if any Movie entry has exact input year*/
                         if(titleIsOk && yearIsOk){
                             result.add(movies.get(movieID));
                         }
-                    }else{
+                    }else{      /*If only title is given*/
                         if(titleIsOk){
                             result.add(movies.get(movieID));
                         }
                     }
                 }
-            }else{
+            }else{      /*If the title is not given*/
                 if(tag != null){
-                    tagIsOk = movies.get(movieID).getTags().contains(tag);
-                    if(year != -1){
-                        yearIsOk = movies.get(movieID).getYear() == year;
+                    tagIsOk = movies.get(movieID).getTags().contains(tag);      /*Check if any Movie entry has input tag as substring*/
+                    if(year != -1){     /*If tag and year are given*/
+                        yearIsOk = movies.get(movieID).getYear() == year;       /*Check if any Movie entry has exact input year*/
                         if(tagIsOk && yearIsOk){
                             result.add(movies.get(movieID));
                         }
-                    }else{
+                    }else{      /*If tag are given*/
                         if(tagIsOk){
                             result.add(movies.get(movieID));
                         }
                     }
                 }else{
-                    if(year != -1){
+                    if(year != -1){     /*If only year is given*/
                         if(yearIsOk){
                             result.add(movies.get(movieID));
                         }
-                    }else{
+                    }else{      /*If title, tag and year are not given*/
                         continue;
                     }
                 }
@@ -260,40 +272,46 @@ public class SimpleMovieSearchEngine implements BaseMovieSearchEngine{
     }
 
     /**
-     *
-     * @param unsortedMovies
-     * @param asc
-     * @return
+     * Sort Given List of Movies Alphabetically by their Titles
+     * @param unsortedMovies List of target Movies
+     * @param asc Boolean for Sorting in Ascending Order. If it is false, it means Sorting in Descending Order.
+     * @return Alphabetically Sorted List
      */
     @Override
     public List<Movie> sortByTitle(List<Movie> unsortedMovies, boolean asc){
-        unsortedMovies.sort(new Comparator<Movie>(){
+        unsortedMovies.sort(new Comparator<Movie>(){        /*Anonymous Class for custom Comparator which is required when sorting Custom Object or Class*/
+            /**
+             * Compares 2 Movies by their Title
+             * @param c1 Movie 1
+             * @param c2 Movie 2
+             * @return An integer which will indicate which Movie Title is higher in Alphabetical Order
+             */
             @Override
             public int compare(Movie c1, Movie c2){
-                return c1.getTitle().compareToIgnoreCase(c2.getTitle());
+                return c1.getTitle().compareToIgnoreCase(c2.getTitle());        /*Compare Movies by their Title (by using compareToIgnoreCase())*/
             }
         });
-        if(!asc){
-            Collections.reverse(unsortedMovies);
+        if(!asc){       /*If the boolean parameter is not Ascending Order*/
+            Collections.reverse(unsortedMovies);        /*Reverses the List*/
         }
         return unsortedMovies;
     }
 
     /**
-     *
-     * @param unsortedMovies
-     * @param asc
-     * @return
+     * Sort Given List of Movies Numerically by their Average Rating
+     * @param unsortedMovies List of target Movies
+     * @param asc Boolean for Sorting in Ascending Order. If it is false, it means Sorting in Descending Order.
+     * @return Alphabetically Sorted List
      */
     @Override
     public List<Movie> sortByRating(List<Movie> unsortedMovies, boolean asc){
         for(int i = 0; i < unsortedMovies.size(); i++){
             for(int j = i + 1; j < unsortedMovies.size(); j++){
-                if(asc && unsortedMovies.get(i).getMeanRating() > unsortedMovies.get(j).getMeanRating()){
-                    Collections.swap(unsortedMovies, i, j);
+                if(asc && unsortedMovies.get(i).getMeanRating() > unsortedMovies.get(j).getMeanRating()){       /*If the boolean parameter is Ascending Order and average mean of i is greater than j*/
+                    Collections.swap(unsortedMovies, i, j);     /*Swaps i and j*/
                 }
-                if(!asc && unsortedMovies.get(i).getMeanRating() < unsortedMovies.get(j).getMeanRating()){
-                    Collections.swap(unsortedMovies, i, j);
+                if(!asc && unsortedMovies.get(i).getMeanRating() < unsortedMovies.get(j).getMeanRating()){      /*If the boolean parameter is NOT Ascending Order and average mean of i is lower than j*/
+                    Collections.swap(unsortedMovies, i, j);     /*Swaps i and j*/
                 }
             }
         }
