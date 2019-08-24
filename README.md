@@ -1,5 +1,5 @@
 # ITCS208 - Project 2 - Moogle
-A student project. Mahidol University, Faculty of ICT: ITCS 208 – Object Oriented Programming. 2017
+A student project. Mahidol University, Faculty of ICT: `ITCS208 – Object Oriented Programming`. 2017
 
 This program is designed to work in training model in Movie/Film domain. 
 This program can calculate similarity scores by providing a dataset in CSV files. When inputted and trained, the program can give out results which similar to the given parameters...
